@@ -1,5 +1,5 @@
 {
-  "name": "bhbbk",
+  "name": "lbbbk",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,9 +7,12 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "core-js": "^2.6.5",
     "element-ui": "^2.7.2",
+    "nprogress": "^0.2.0",
     "register-service-worker": "^1.6.2",
+    "utility": "^1.16.1",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",

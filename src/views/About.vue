@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div class="about" style="height:2000px;">
+    <h1>This is an about page ---  页面开发中</h1>
   </div>
 </template>

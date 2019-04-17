@@ -14,6 +14,8 @@ Vue.use(ElementUI, { locale: locale.default, size: 'mini' })
 // 引入全局css
 import "@/styles/index.scss";
 
+// 引入 permission (路由拦截器)
+import "./permission";
 
 
 Vue.config.productionTip = false

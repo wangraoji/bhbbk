@@ -1,18 +1,33 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div class="home h100">
+    <!-- 头部 -->
+    <lb-header></lb-header>
+    <!-- 主体 -->
+    <div class="lb-main">
+      <div class="lb-container">
+        <router-view/>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import { Component, Vue } from "vue-property-decorator";
+import header from "@/components/header/index.vue";
 
 @Component({
   components: {
-    HelloWorld,
-  },
+    "lb-header": header
+  }
 })
 export default class Home extends Vue {}
 </script>
+
+<style lang="scss" scoped>
+.lb-main {
+  height: calc(100% - 48px);
+  padding-top: 20px;
+  overflow: auto;
+}
+</style>
+
