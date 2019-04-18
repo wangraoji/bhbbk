@@ -59,7 +59,8 @@
                   class="pd075 highlight"
                 >
                   {{item.bbkUpdated}}&nbsp;&nbsp;&nbsp;版本更新 技术/客服&nbsp;
-                  联系&nbsp;<svg-icon icon-class="qq"/>：(1094459877)
+                  联系&nbsp;
+                  <svg-icon icon-class="qq"/>：(1094459877)
                 </th>
               </template>
               <template v-if="!item.bbkUpdated">
@@ -138,7 +139,6 @@
       </el-row>
       <el-row class="lb-pages">
         <el-pagination
-          @size-change="pagesizeChange"
           @current-change="currentPageChange"
           :current-page.sync="pagination.currentPage"
           :page-size="pagination.pagesize"
@@ -211,15 +211,10 @@ export default class Bbk extends Vue {
     });
     this.getbbkdataFn({ beg: 0, end: 30 });
   }
-  pagesizeChange(pagesize: any) {
-    this.pagination.pagesize = pagesize;
-    this.log(this.page);
-    this.page.end = this.page.beg + pagesize;
-    this.getbbkdataFn(this.page);
-  }
+  // 分页切换
   currentPageChange(currentPage: any) {
     this.pagination.currentPage = currentPage;
-    let beg = currentPage === 1 ? 0 : currentPage * this.pagination.pagesize;
+    let beg = (currentPage - 1) * this.pagination.pagesize;
     this.page = {
       beg: beg,
       end: beg + this.pagination.pagesize
