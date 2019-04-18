@@ -69,9 +69,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 import _ from "lodash";
-import { getNavData, logIn } from "@/api";
+import { getNavData, logIn } from "@/api/headerApi";
 let utils = require("utility");
 @Component
 export default class Header extends Vue {

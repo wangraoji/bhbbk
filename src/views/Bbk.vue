@@ -1,7 +1,6 @@
 <template>
   <div class="bbk h100">
-    <el-row>当前状态{{ loginStatus }}</el-row>
-    <el-row class="lb-table-container">
+    <el-row class="lb-table-container" v-loading="bbkdataLoading">
       <el-row class="lb-t mb-10">
         <el-col :span="10">
           <el-input
@@ -20,8 +19,23 @@
         <el-col :span="5" class="pl20">
           <el-button @click="toSearch('clear')" size="medium">清空搜索</el-button>
         </el-col>
+        <el-col :span="2" :offset="7">
+          <el-select
+            v-model="pagination.pagesize"
+            placeholder="请选择"
+            size="medium"
+            @change="pagesizeChange"
+          >
+            <el-option
+              v-for="item in pagination.topPagesizes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-col>
       </el-row>
-      <el-row class="lb-b">
+      <el-row class="lb-b mb-10">
         <table class="lb-table w100">
           <thead>
             <tr class="lb-t-h">
@@ -48,32 +62,103 @@
               <td>
                 <el-button type="success">版本截图</el-button>
               </td>
-              <td v-if="loginStatus"></td>
+              <td v-if="loginStatus">
+                <el-button type="primary" @click="addRow">新增数据</el-button>
+              </td>
             </tr>
             <tr v-for="(item,i) of resultData" :key="i">
-              <template v-if="item.xx">
+              <template v-if="item.bbkUpdated">
                 <td
                   :colspan="loginStatus ? 6 : 5"
                   style="background:linear-gradient(to bottom, #f6f7f9 0%, #ebedf0 100%);"
                   class="pd075"
-                >{{item.xx}}</td>
+                >{{item.bbkUpdated}}</td>
               </template>
-              <template v-if="!item.xx">
+              <template v-if="!item.bbkUpdated">
+                <!-- 演示网站 -->
                 <td>
-                  <el-button type="danger">演示网站</el-button>
+                  <a :href="item.bbkShowWeb" target="_blank">
+                    <el-button type="danger">演示网站</el-button>
+                  </a>
                 </td>
-                <td class="text-left pl20 pd075">{{item.amount1}}</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
+                <!-- 版本名称 -->
+                <td class="text-left pl20 pd075">
+                  <img src="@/assets/imgs/jp.gif" class="bbkHots" v-if="item.bbkHots==='jp'">
+                  <img src="@/assets/imgs/hot.gif" class="bbkHots" v-if="item.bbkHots!=='jp'">
+                  &nbsp;
+                  <span
+                    :style="{color:item.bbkLineHeight,fontWeight:item.bbkFontWeight}"
+                  >{{item.bbkName}}</span>
+                </td>
+                <!-- 自助购买 -->
+                <td>
+                  <el-row v-if="item.bbkBuyLink.split('|')[0] === 'text'">
+                    <a
+                      href="http://wpa.qq.com/msgrd?v=3&uin=1094459877&site=xg.com&menu=yes"
+                      target="_blank"
+                    >
+                      <el-button class="lxgl-btn">
+                        <svg-icon icon-class="qq" class="lxgl-svg"/>
+                        {{item.bbkBuyLink.split('|')[1]}}
+                      </el-button>
+                    </a>
+                  </el-row>
+                  <el-row v-if="item.bbkBuyLink.split('|')[0] === 'txt'">
+                    <a target="_blank" :href="item.bbkBuyLink.split('|')[2]">
+                      <el-button class="mfbb-btn">{{item.bbkBuyLink.split('|')[1]}}</el-button>
+                    </a>
+                  </el-row>
+                  <el-row
+                    v-if="item.bbkBuyLink.split('|')[0] !== 'txt' && item.bbkBuyLink.split('|')[0] !== 'text'"
+                  >
+                    <el-col :xl="12" class="text-center">
+                      <a class="gm" :href="item.bbkBuyLink.split('|')[0]" target="_blank">
+                        <img src="@/assets/imgs/gm01.gif" alt="gm01" class="w100">
+                      </a>
+                    </el-col>
+                    <el-col :xl="12" class="text-center">
+                      <a class="gm" :href="item.bbkBuyLink.split('|')[1]" target="_blank">
+                        <img src="@/assets/imgs/gm02.gif" alt="gm02" class="w100">
+                      </a>
+                    </el-col>
+                  </el-row>
+                </td>
+                <!-- 版本类型 -->
+                <td>
+                  <el-button class="type-btn">{{ item.bbkType }}</el-button>
+                </td>
+                <!-- 版本截图 -->
+                <td>
+                  <a :href="item.bbkScreenshots" target="_blank">
+                    <el-button type="success">版本截图</el-button>
+                  </a>
+                </td>
                 <td v-if="loginStatus">
-                  <el-button type="primary">编辑</el-button>
-                  <el-button type="danger" @click="deleteRow(item)">删除</el-button>
+                  <el-row>
+                    <el-col :xl="12" style="padding:0.3em 0.5em;">
+                      <el-button type="primary" plain class="w100">编辑</el-button>
+                    </el-col>
+                    <el-col :xl="12" style="padding:0.3em 0.5em">
+                      <el-button type="danger" @click="deleteRow(item)" plain class="w100">删除</el-button>
+                    </el-col>
+                  </el-row>
                 </td>
               </template>
             </tr>
           </tbody>
         </table>
+      </el-row>
+      <el-row class="lb-pages">
+        <el-pagination
+          @size-change="pagesizeChange"
+          @current-change="currentPageChange"
+          :current-page.sync="pagination.currentPage"
+          :page-sizes="pagination.pagesizes"
+          :page-size="pagination.pagesize"
+          layout="sizes,next, pager ,prev"
+          :total="pagination.total"
+          background
+        ></el-pagination>
       </el-row>
     </el-row>
   </div>
@@ -82,86 +167,41 @@
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 import _ from "lodash";
+import { getbbkgg, getbbkdata } from "@/api/bbkApi";
 @Component
 export default class Bbk extends Vue {
   log: any;
-  tableData6: any = [
-    {
-      id: "1",
-      name: "王小虎1",
-      amount1: "234",
-      amount2: "3.2",
-      amount3: 10,
-      amount4: 10,
-      guid: "1"
-    },
-    {
-      id: "3",
-      name: "王小虎3",
-      amount1: "234",
-      amount2: "3.2",
-      amount3: 10,
-      amount4: 10,
-      guid: "2"
-    },
-    {
-      id: "5",
-      name: "王小虎5",
-      amount1: "234",
-      amount2: "3.2",
-      amount3: 10,
-      amount4: 10,
-      guid: "3"
-    },
-    {
-      id: "1",
-      name: "王小虎1",
-      amount1: "2342",
-      amount2: "3.23",
-      amount3: 10,
-      amount4: 10,
-      guid: "4"
-    },
-    {
-      id: "3",
-      name: "王小虎3",
-      amount1: "234",
-      amount2: "3.2",
-      amount3: 10,
-      amount4: 10,
-      guid: "5"
-    }
-  ];
+  // 版本数据loading
+  bbkdataLoading: boolean = false;
+  // 重置后的数据
   resultData: any = [];
-  gg: any = [
-    {
-      gg:
-        "<span style='font-size:blod'>本站为萝卜论坛旗下商业版本销售站点：唯一销售QQ：1094459877谨防假冒！</span>",
-      color: "#DC143C"
-    },
-    {
-      gg:
-        "<span style='font-size:blod'>本站支持互换，代销，收购开区独家版本合作共赢，欢迎传奇各界人士来洽谈！</span>",
-      color: "#FF8C00"
-    },
-    {
-      gg:
-        "<span style='font-size:blod'>如果版本截图网址打不开，请把.com改成.net即可。</span>",
-      color: "#FF4500"
-    },
-    {
-      gg:
-        "<span style='font-size:blod'>更多免费版本 请到 <a href='https://www.0lb.com/' style='text-decoration:underline;' target='_blank'>萝卜论坛</a> 内查看下载</span>",
-      color: "#808000"
-    },
-    {
-      gg:
-        "<span style='font-size:blod'>独家商业版本 请到 <a href='http://bbk.bhbbk.com/' style='text-decoration:underline;' target='_blank'>商业版本库</a> 内查看下载</span>",
-      color: "#FF0000"
-    }
-  ];
+  // 公告
+  gg: any = [];
+  // 搜索参数
   search: string = "";
-  // loginStatus:boolean = this.loginStatusFn ? JSON.parse(this.loginStatusFn).token ? true : false : false;
+  // 数据分页
+  pagination: any = {
+    topPagesizes: [
+      {
+        value: 30,
+        label: "当前 30条/页"
+      },
+      {
+        value: 50,
+        label: "当前 50条/页"
+      }
+    ],
+    pagesizes: [30, 50],
+    pagesize: 30,
+    currentPage: 1,
+    total: 1000
+  };
+  // 获取数据
+  page: any = {
+    beg: 0,
+    end: this.pagination.pagesize
+  };
+  // 登陆状态
   get loginStatus() {
     let userInfo;
     if (typeof this.$store.getters.userInfo === "string") {
@@ -170,41 +210,57 @@ export default class Bbk extends Vue {
       userInfo = this.$store.getters.userInfo;
     }
     return userInfo.token ? true : false;
+    // return true;
   }
+  // mounted
   mounted() {
-    this.dbconversion();
+    // 获取版本库公告
+    this.getbbkggFn();
+    // 获取版本
+    this.getbbkdataFn(this.page);
   }
+  // 搜索
   toSearch(e: any) {
     let searchInput: any = this.$refs.searchInput;
     searchInput.blur();
   }
-  handleSelect(item: any) {
-    // log(item);
-    console.log(item);
-  }
+  // 新增
+  addRow() {}
   // 删除
   deleteRow(item: any) {
-    this.tableData6.forEach((e: any, i: any) => {
-      if (e.guid === item.guid) {
-        this.$delete(this.tableData6, i);
+    this.resultData.forEach((e: any, i: any) => {
+      if (e.uniqueid === item.uniqueid) {
+        this.$delete(this.resultData, i);
       }
     });
-    this.dbconversion();
+    this.getbbkdataFn({ beg: 0, end: 30 });
   }
-  // 数据转换
-  dbconversion() {
-    let arr = _.orderBy(this.tableData6, ["id"]);
-    let tempData: any = [];
-    arr.forEach((e, i) => {
-      let result = tempData.filter((v: any) => {
-        return v.xx === e.id;
-      });
-      if (result.length === 0) {
-        tempData.push({ xx: e.id });
-      }
-      tempData.push(_.omit(e, ["id"]));
-    });
-    this.resultData = tempData;
+  pagesizeChange(pagesize: any) {
+    this.pagination.pagesize = pagesize;
+    this.log(this.page);
+    this.page.end = this.page.beg + pagesize;
+    this.getbbkdataFn(this.page);
+  }
+  currentPageChange(currentPage: any) {
+    this.pagination.currentPage = currentPage;
+    let beg = currentPage === 1 ? 0 : currentPage * this.pagination.pagesize;
+    this.page = {
+      beg: beg,
+      end: beg + this.pagination.pagesize
+    };
+    this.getbbkdataFn(this.page);
+  }
+  // 获取版本库GG
+  async getbbkggFn() {
+    this.gg = await getbbkgg();
+  }
+  // 获取版本库版本
+  async getbbkdataFn(page: any) {
+    this.bbkdataLoading = true;
+    let bbkdata: any = await getbbkdata(page);
+    this.bbkdataLoading = false;
+    this.pagination.total = bbkdata.total;
+    this.resultData = bbkdata.data;
   }
 }
 </script>
@@ -242,11 +298,34 @@ $bdc: 1px solid #d5d5d5;
         background: #31b0d5;
       }
     }
-    .text-left {
-      text-align: left;
+    .lxgl-btn {
+      background: red;
+      color: #fff;
+      border-color: red;
+    }
+    .mfbb-btn {
+      background: #dd8721;
+      color: #fff;
+      border-color: #dd8721;
     }
     .pd075 {
-      padding: 0.75em 0;
+      padding: 0.65em 0;
+    }
+    a.gm {
+      display: inline-block;
+      img {
+        position: relative;
+        top: 2px;
+      }
+    }
+    .lxgl-svg {
+      position: relative;
+      top: -0.9px;
+      left: -5px;
+    }
+    .bbkHots {
+      position: relative;
+      top: 1px;
     }
   }
   .pl20 {

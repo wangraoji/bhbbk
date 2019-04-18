@@ -62,7 +62,7 @@ service.interceptors.response.use(
     error => {
         console.log('err' + error) // for debug
         Message({
-            message: error.message,
+            message: `没有请求到数据`,
             type: 'error',
             duration: 5 * 1000
         })

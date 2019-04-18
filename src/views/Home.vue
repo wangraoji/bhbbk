@@ -7,6 +7,10 @@
       <div class="lb-container">
         <router-view/>
       </div>
+      <!-- 底部 -->
+      <div class="lb-footer">
+        <lb-footer></lb-footer>
+      </div>
     </div>
   </div>
 </template>
@@ -14,10 +18,11 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import header from "@/components/header/index.vue";
-
+import footer from "@/components/footer/index.vue";
 @Component({
   components: {
-    "lb-header": header
+    "lb-header": header,
+    "lb-footer": footer
   }
 })
 export default class Home extends Vue {}
@@ -28,6 +33,9 @@ export default class Home extends Vue {}
   height: calc(100% - 48px);
   padding-top: 20px;
   overflow: auto;
+}
+.lb-footer {
+  margin-top: 10px;
 }
 </style>
 

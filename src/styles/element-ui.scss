@@ -11,3 +11,28 @@
         }
     }
 }
+
+// 文字按钮
+.text-btn {
+    color: #303133!important;
+    cursor: default;
+    &:hover {
+        color: #303133!important;
+    }
+}
+
+// bbk分页
+.bbk {
+    .el-pagination {
+        .el-pagination__jump,
+        .el-pagination__sizes,
+        .btn-prev,
+        .el-pager,
+        .btn-next {
+            float: right;
+        }
+        .el-pagination__sizes {
+            margin-right: -10px;
+        }
+    }
+}
