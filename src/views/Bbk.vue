@@ -19,21 +19,6 @@
         <el-col :span="5" class="pl20">
           <el-button @click="toSearch('clear')" size="medium">清空搜索</el-button>
         </el-col>
-        <el-col :span="2" :offset="7">
-          <el-select
-            v-model="pagination.pagesize"
-            placeholder="请选择"
-            size="medium"
-            @change="pagesizeChange"
-          >
-            <el-option
-              v-for="item in pagination.topPagesizes"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-col>
       </el-row>
       <el-row class="lb-b mb-10">
         <table class="lb-table w100">
@@ -41,9 +26,9 @@
             <tr class="lb-t-h">
               <th width="10%" class="pd075">开区网站</th>
               <th>版本名称</th>
-              <th width="10%">自助购买</th>
-              <th width="10%">版本类型</th>
-              <th width="10%">游戏详情</th>
+              <th width="8%">版本类型</th>
+              <th width="8%">游戏详情</th>
+              <th width="12%">自助购买</th>
               <th width="10%" v-if="loginStatus">编辑</th>
             </tr>
           </thead>
@@ -54,13 +39,13 @@
               </td>
               <td v-html="item.gg" :style="{color:item.color}" class="text-left pl20 pd075"></td>
               <td>
-                <el-button type="warning">萝卜版本库</el-button>
-              </td>
-              <td>
                 <el-button class="type-btn">各种类型</el-button>
               </td>
               <td>
                 <el-button type="success">版本截图</el-button>
+              </td>
+              <td>
+                <el-button type="warning">萝卜版本库</el-button>
               </td>
               <td v-if="loginStatus">
                 <el-button type="primary" @click="addRow">新增数据</el-button>
@@ -68,11 +53,14 @@
             </tr>
             <tr v-for="(item,i) of resultData" :key="i">
               <template v-if="item.bbkUpdated">
-                <td
+                <th
                   :colspan="loginStatus ? 6 : 5"
                   style="background:linear-gradient(to bottom, #f6f7f9 0%, #ebedf0 100%);"
-                  class="pd075"
-                >{{item.bbkUpdated}}</td>
+                  class="pd075 highlight"
+                >
+                  {{item.bbkUpdated}}&nbsp;&nbsp;&nbsp;版本更新 技术/客服&nbsp;
+                  联系&nbsp;<svg-icon icon-class="qq"/>：(1094459877)
+                </th>
               </template>
               <template v-if="!item.bbkUpdated">
                 <!-- 演示网站 -->
@@ -90,8 +78,18 @@
                     :style="{color:item.bbkLineHeight,fontWeight:item.bbkFontWeight}"
                   >{{item.bbkName}}</span>
                 </td>
-                <!-- 自助购买 -->
+                <!-- 版本类型 -->
                 <td>
+                  <el-button class="type-btn">{{ item.bbkType }}</el-button>
+                </td>
+                <!-- 版本截图 -->
+                <td>
+                  <a :href="item.bbkScreenshots" target="_blank">
+                    <el-button type="success">版本截图</el-button>
+                  </a>
+                </td>
+                <!-- 自助购买 -->
+                <td style="padding: 0px 10px;">
                   <el-row v-if="item.bbkBuyLink.split('|')[0] === 'text'">
                     <a
                       href="http://wpa.qq.com/msgrd?v=3&uin=1094459877&site=xg.com&menu=yes"
@@ -123,16 +121,6 @@
                     </el-col>
                   </el-row>
                 </td>
-                <!-- 版本类型 -->
-                <td>
-                  <el-button class="type-btn">{{ item.bbkType }}</el-button>
-                </td>
-                <!-- 版本截图 -->
-                <td>
-                  <a :href="item.bbkScreenshots" target="_blank">
-                    <el-button type="success">版本截图</el-button>
-                  </a>
-                </td>
                 <td v-if="loginStatus">
                   <el-row>
                     <el-col :xl="12" style="padding:0.3em 0.5em;">
@@ -153,9 +141,8 @@
           @size-change="pagesizeChange"
           @current-change="currentPageChange"
           :current-page.sync="pagination.currentPage"
-          :page-sizes="pagination.pagesizes"
           :page-size="pagination.pagesize"
-          layout="sizes,next, pager ,prev"
+          layout="next, pager ,prev"
           :total="pagination.total"
           background
         ></el-pagination>
@@ -181,18 +168,7 @@ export default class Bbk extends Vue {
   search: string = "";
   // 数据分页
   pagination: any = {
-    topPagesizes: [
-      {
-        value: 30,
-        label: "当前 30条/页"
-      },
-      {
-        value: 50,
-        label: "当前 50条/页"
-      }
-    ],
-    pagesizes: [30, 50],
-    pagesize: 30,
+    pagesize: 100,
     currentPage: 1,
     total: 1000
   };

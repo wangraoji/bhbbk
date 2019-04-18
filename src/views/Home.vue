@@ -34,8 +34,5 @@ export default class Home extends Vue {}
   padding-top: 20px;
   overflow: auto;
 }
-.lb-footer {
-  margin-top: 10px;
-}
 </style>
 
