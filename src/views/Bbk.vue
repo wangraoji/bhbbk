@@ -35,7 +35,7 @@
             <el-col :xl="22">
               <el-checkbox
                 v-model="item.isActive"
-                v-for="item of cxtjData.engineType"
+                v-for="item of cxtjData.bbkEngine"
                 :key="item.text"
               >{{ item.text }}</el-checkbox>
             </el-col>
@@ -52,7 +52,7 @@
             <el-col :xl="22">
               <el-checkbox
                 v-model="item.isActive"
-                v-for="item of cxtjData.bbType"
+                v-for="item of cxtjData.bbkType"
                 :key="item.text"
               >{{ item.text }}</el-checkbox>
             </el-col>
@@ -95,18 +95,18 @@
               </td>
             </tr>
             <tr v-for="(item,i) of resultData" :key="i">
-              <template v-if="item.bbkUpdated">
+              <template v-if="item.group">
                 <th
                   :colspan="loginStatus ? 6 : 5"
                   style="background:linear-gradient(to bottom, #f6f7f9 0%, #ebedf0 100%);"
                   class="pd075 highlight"
                 >
-                  {{item.bbkUpdated}}&nbsp;&nbsp;&nbsp;版本更新 技术/客服&nbsp;
+                  {{item.group}}&nbsp;&nbsp;&nbsp;版本更新 技术/客服&nbsp;
                   联系&nbsp;
                   <svg-icon icon-class="qq"/>：(1094459877)
                 </th>
               </template>
-              <template v-if="!item.bbkUpdated">
+              <template v-if="!item.group">
                 <!-- 演示网站 -->
                 <td>
                   <a :href="item.bbkShowWeb" target="_blank">
@@ -168,7 +168,7 @@
                 <td v-if="loginStatus">
                   <el-row>
                     <el-col :xl="12" style="padding:0.3em 0.5em;">
-                      <el-button type="primary" plain class="w100">编辑</el-button>
+                      <el-button type="primary" plain class="w100" @click="editRow(item)">编辑</el-button>
                     </el-col>
                     <el-col :xl="12" style="padding:0.3em 0.5em">
                       <el-button type="danger" @click="deleteRow(item)" plain class="w100">删除</el-button>
@@ -191,22 +191,254 @@
         ></el-pagination>
       </el-row>
     </el-row>
+    <el-dialog
+      :title="dialogCfg.title"
+      :visible.sync="dialogCfg.show"
+      width="30%"
+      :close-on-click-modal="false"
+      v-loading="dialogLoading"
+    >
+      <!-- 更新日期 + 版本引擎 -->
+      <el-row :gutter="10" class="mb-10">
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">更新日期：</el-button>
+        </el-col>
+        <el-col :xl="9">
+          <el-date-picker
+            v-model="dialogCfg.data.bbkUpdated"
+            type="date"
+            placeholder="选择日期"
+            style="width:100%"
+            size="small"
+            value-format="yyyy-MM-dd"
+          ></el-date-picker>
+        </el-col>
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">版本引擎：</el-button>
+        </el-col>
+        <el-col :xl="9">
+          <el-select
+            v-model="dialogCfg.data.bbkEngine"
+            placeholder="选择版本引擎"
+            class="w100"
+            size="small"
+          >
+            <el-option v-for="item in actionCfg.bbkEngine" :key="item" :label="item" :value="item"></el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+      <!-- 演示网站 -->
+      <el-row :gutter="10" class="mb-10">
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">演示网站：</el-button>
+        </el-col>
+        <el-col :xl="21">
+          <el-input
+            v-model="dialogCfg.data.bbkShowWeb"
+            placeholder="输入演示网站 例：https://www...."
+            size="small"
+          ></el-input>
+        </el-col>
+      </el-row>
+      <!-- 版本名称 -->
+      <el-row :gutter="10" class="mb-10">
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">版本名称：</el-button>
+        </el-col>
+        <el-col :xl="21">
+          <el-input v-model="dialogCfg.data.bbkName" placeholder="输入版本名称" size="small"></el-input>
+        </el-col>
+      </el-row>
+      <!-- 字体颜色 + 字体粗细 -->
+      <el-row :gutter="10" class="mb-10">
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">字体颜色：</el-button>
+        </el-col>
+        <el-col :xl="9">
+          <el-col :span="18" style="padding:0;">
+            <el-select
+              v-model="dialogCfg.data.bbkLineHeight"
+              placeholder="选择字体颜色"
+              class="w100"
+              size="small"
+            >
+              <el-option
+                v-for="item in actionCfg.bbkLineHeight"
+                :key="item.label"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="6">
+            <el-button type="text" class="text-btn" size="small">
+              <span
+                :style="{color:dialogCfg.data.bbkLineHeight || '#606266',fontWeight:dialogCfg.data.bbkFontWeight}"
+              >演示</span>
+            </el-button>
+          </el-col>
+        </el-col>
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">字体粗细：</el-button>
+        </el-col>
+        <el-col :xl="9">
+          <el-col :span="18" style="padding:0;">
+            <el-select
+              v-model="dialogCfg.data.bbkFontWeight"
+              placeholder="选择字体粗细"
+              class="w100"
+              size="small"
+            >
+              <el-option
+                v-for="item in actionCfg.bbkFontWeight"
+                :key="item.label"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="6">
+            <el-button type="text" class="text-btn" size="small">
+              <span
+                :style="{fontWeight:dialogCfg.data.bbkFontWeight,color:dialogCfg.data.bbkLineHeight || '#606266'}"
+              >演示</span>
+            </el-button>
+          </el-col>
+        </el-col>
+      </el-row>
+      <!-- 版本热度 + 版本类型 -->
+      <el-row :gutter="10" class="mb-10">
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">版本热度：</el-button>
+        </el-col>
+        <el-col :xl="9">
+          <el-col :span="18" style="padding:0;">
+            <el-select
+              v-model="dialogCfg.data.bbkHots"
+              placeholder="选择版本热度"
+              class="w100"
+              size="small"
+            >
+              <el-option
+                v-for="item in actionCfg.bbkHots"
+                :key="item.label"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-col>
+          <span :span="6">
+            <img src="@/assets/imgs/jp.gif" class="ysHots" v-if="dialogCfg.data.bbkHots==='jp'">
+            <img src="@/assets/imgs/hot.gif" class="ysHots" v-if="dialogCfg.data.bbkHots!=='jp'">
+          </span>
+        </el-col>
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">版本类型：</el-button>
+        </el-col>
+        <el-col :xl="9">
+          <el-select
+            v-model="dialogCfg.data.bbkType"
+            placeholder="选择版本类型"
+            class="w100"
+            size="small"
+          >
+            <el-option v-for="item in actionCfg.bbkType" :key="item" :label="item" :value="item"></el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+      <!-- 版本截图 -->
+      <el-row :gutter="10" class="mb-10">
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">版本截图：</el-button>
+        </el-col>
+        <el-col :xl="21">
+          <el-input
+            v-model="dialogCfg.data.bbkScreenshots"
+            placeholder="输入截图网站 例：https://www...."
+            size="small"
+          ></el-input>
+        </el-col>
+      </el-row>
+      <!-- 自助购买 -->
+      <el-row :gutter="10">
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">自助购买：</el-button>
+        </el-col>
+        <el-col :xl="9">
+          <el-select v-model="bbkBuyLinkStr" placeholder="选择自助购买方式" class="w100" size="small">
+            <el-option
+              v-for="item in bbkBuyLinkInfo"
+              :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-col>
+        <el-col :xl="12" v-if="bbkBuyLinkStr==='zdy'">
+          <el-input v-model="bbkBuyLinkData.txt" placeholder="输入自定义内容" size="small" clearable></el-input>
+        </el-col>
+        <el-col :xl="12" v-if="bbkBuyLinkStr==='lxgl'" class="text-center">
+          <el-button class="lxgl-btn" size="small">
+            <svg-icon icon-class="qq" class="lxgl-svg"/>联系管理
+          </el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="10" v-if="bbkBuyLinkStr==='link'" style="margin-top:10px">
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">购买链接1：</el-button>
+        </el-col>
+        <el-col :xl="21">
+          <el-input
+            v-model="bbkBuyLinkData.link1"
+            placeholder="输入购买链接 例：https://www...."
+            size="small"
+            clearable
+          ></el-input>
+        </el-col>
+      </el-row>
+      <el-row :gutter="10" v-if="bbkBuyLinkStr==='link'" style="margin-top:10px">
+        <el-col :xl="3">
+          <el-button type="text" class="text-btn" size="small">购买链接2：</el-button>
+        </el-col>
+        <el-col :xl="21">
+          <el-input
+            v-model="bbkBuyLinkData.link2"
+            placeholder="输入购买链接 例：https://www...."
+            size="small"
+            clearable
+          ></el-input>
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogCfg.show = false">取 消</el-button>
+        <el-button type="primary" @click="dialogConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 import _ from "lodash";
-import { getbbkcxtj, getbbkgg, getbbkdata, searchbb } from "@/api/bbkApi";
+import {
+  getbbkgg,
+  getbbkdata,
+  searchbb,
+  getbbkactionCfg,
+  addbb,
+  deletebb,
+  editbb
+} from "@/api/bbkApi";
 @Component
 export default class Bbk extends Vue {
   log: any;
+  // 当前用户
+  userInfo: any = {};
   // 版本数据loading
   bbkdataLoading: boolean = false;
   // 是否为条件查询
   isCXTJ: boolean = false;
   cxtjData: any = [];
-
   // 重置后的数据
   resultData: any = [];
   // 公告
@@ -225,16 +457,55 @@ export default class Bbk extends Vue {
     end: this.pagination.pagesize,
     db: "default"
   };
+  // 版本增删改查配置
+  actionCfg: any = {};
+  // 弹出框 -> loading
+  dialogLoading: boolean = false;
+  // 弹出框 -> 数据
+  dialogData: any = {
+    bbkUpdated: "", // 更新日期
+    bbkEngine: "", // 版本引擎
+    bbkShowWeb: "", // 演示网站
+    bbkName: "", // 版本名称
+    bbkLineHeight: "", // 字体颜色
+    bbkFontWeight: "", // 字体粗细
+    bbkHots: "", // 版本热度
+    bbkType: "", // 版本类型
+    bbkScreenshots: "", // 版本截图
+    bbkBuyLink: "" // 自助购买
+  };
+  // 弹出框 -> 配置
+  dialogCfg: any = {
+    show: false,
+    title: "",
+    data: _.cloneDeep(this.dialogData)
+  };
+  // 自助购买选择
+  bbkBuyLinkStr: any = "";
+  bbkBuyLinkInfo: any = [
+    {
+      label: "联系管理",
+      value: "lxgl"
+    },
+    {
+      label: "自定义",
+      value: "zdy"
+    },
+    {
+      label: "购买链接",
+      value: "link"
+    }
+  ];
+  bbkBuyLinkData: any = {};
   // 登陆状态
   get loginStatus() {
-    let userInfo;
     if (typeof this.$store.getters.userInfo === "string") {
-      userInfo = JSON.parse(this.$store.getters.userInfo);
+      this.userInfo = JSON.parse(this.$store.getters.userInfo);
     } else {
-      userInfo = this.$store.getters.userInfo;
+      this.userInfo = this.$store.getters.userInfo;
     }
-    return userInfo.token ? true : false;
-    // return true;
+    return this.userInfo.token ? true : false;
+    // return true;/
   }
   // mounted
   mounted() {
@@ -245,15 +516,39 @@ export default class Bbk extends Vue {
   }
 
   // 新增
-  addRow() {}
+  addRow() {
+    this.dialogCfg.show = true;
+    this.dialogCfg.title = "新增版本";
+    this.initData();
+  }
+  // 修改
+  editRow(item: any) {
+    this.dialogCfg.show = true;
+    this.dialogCfg.title = "修改";
+    this.dialogCfg.data = _.cloneDeep(item);
+    let bylink = item.bbkBuyLink.split("|");
+    if (bylink[0] === "text") {
+      this.bbkBuyLinkStr = "lxgl";
+    } else if (bylink[0] === "txt") {
+      this.bbkBuyLinkStr = "zdy";
+      this.bbkBuyLinkData.txt = bylink[1];
+    } else {
+      this.bbkBuyLinkStr = "link";
+      this.bbkBuyLinkData.link1 = bylink[0];
+      this.bbkBuyLinkData.link2 = bylink[1];
+    }
+  }
   // 删除
-  deleteRow(item: any) {
-    this.resultData.forEach((e: any, i: any) => {
-      if (e.uniqueid === item.uniqueid) {
-        this.$delete(this.resultData, i);
-      }
-    });
-    this.getbbkdataFn({ beg: 0, end: 30 });
+  async deleteRow(item: any) {
+    this.$confirm("确定删除该条数据？")
+      .then(async (_: any) => {
+        let data = await deletebb({
+          token: this.userInfo.token,
+          uniqueid: item.uniqueid
+        });
+        this.getbbkdataFn(this.page);
+      })
+      .catch((_: any) => {});
   }
   // 查询
   toSearch(e: any) {
@@ -299,19 +594,133 @@ export default class Bbk extends Vue {
       });
     }
   }
+  // 初始化数据
+  initData() {
+    this.dialogCfg.data = _.cloneDeep(this.dialogData);
+    this.bbkBuyLinkData = [];
+    this.bbkBuyLinkStr = "";
+  }
+  // 弹框确认
+  async dialogConfirm() {
+    if (this.bbkBuyLinkStr === "lxgl") {
+      this.dialogCfg.data.bbkBuyLink = "text|联系管理";
+    } else if (this.bbkBuyLinkStr === "zdy") {
+      let str = this.bbkBuyLinkData.txt;
+      if (str && str.replace(/\s+/g, "") !== "") {
+        this.dialogCfg.data.bbkBuyLink = "txt|" + str.replace(/\s+/g, "");
+      } else {
+        this.dialogCfg.data.bbkBuyLink = "";
+      }
+    } else if (this.bbkBuyLinkStr === "link") {
+      // console.log(this.bbkBuyLinkData);
+      let obj: any = this.bbkBuyLinkData;
+      if (
+        obj.link1 &&
+        obj.link1.replace(/\s+/g, "") !== "" &&
+        obj.link2 &&
+        obj.link2.replace(/\s+/g, "")
+      ) {
+        this.dialogCfg.data.bbkBuyLink =
+          obj.link1.replace(/\s+/g, "") + "|" + obj.link2.replace(/\s+/g, "");
+      } else {
+        this.dialogCfg.data.bbkBuyLink = "";
+      }
+    } else {
+      this.dialogCfg.data.bbkBuyLink = "";
+    }
+    let param = _.cloneDeep(this.dialogCfg.data);
+    let tempData: any = {
+      bbkUpdated: "更新日期",
+      bbkEngine: "版本引擎",
+      bbkShowWeb: "演示网站",
+      bbkName: "版本名称",
+      bbkLineHeight: "字体颜色",
+      bbkFontWeight: "字体粗细",
+      bbkHots: "版本热度",
+      bbkType: "版本类型",
+      bbkScreenshots: "版本截图",
+      bbkBuyLink: "自助购买"
+    };
+    let falg = true;
+    _.forIn(param, (v, k) => {
+      v = v.replace(/\s+/g, "");
+      if (v === "") {
+        alert(tempData[k] + "： 未录入信息");
+        falg = false;
+        return false;
+      }
+    });
+    if (falg) {
+      this.dialogLoading = true;
+      if (param.uniqueid) {
+        let data: any = await editbb({
+          token: this.userInfo.token,
+          data: param
+        });
+        if (data.isOk) {
+          this.dialogCfg.show = false;
+          this.getbbkdataFn(this.page);
+          this.initData();
+        } else {
+          alert(data.msg);
+        }
+      } else {
+        param.uniqueid = param.uniqueid || this.getGuid();
+        let data: any = await addbb({
+          token: this.userInfo.token,
+          data: param
+        });
+        if (data.isOk) {
+          this.resultData = data.data;
+          this.pagination.total = data.total;
+          this.pagination.currentPage = 1;
+          this.dialogCfg.show = false;
+          this.initData();
+        } else {
+          alert(data.msg);
+        }
+      }
+      this.dialogLoading = false;
+    }
+  }
   // 分页切换
   currentPageChange(currentPage: any) {
     this.pagination.currentPage = currentPage;
     let beg = (currentPage - 1) * this.pagination.pagesize;
     this.page.beg = beg;
     this.page.end = beg + this.pagination.pagesize;
-    // this.log(this.page);
     this.getbbkdataFn(this.page);
   }
   // 获取版本库部分数据
   async getbbkApiFn() {
     this.gg = await getbbkgg();
-    this.cxtjData = await getbbkcxtj();
+    this.actionCfg = await getbbkactionCfg();
+    let bbkcxtj: any = {};
+    let cxtjInfo = {
+      bbkType: this.actionCfg.bbkType,
+      bbkEngine: this.actionCfg.bbkEngine
+    };
+    let cxtjData: any = {};
+    _.forIn(cxtjInfo, (v, k) => {
+      cxtjData[k] = [];
+      v.forEach((e: any) => {
+        cxtjData[k].push({
+          isActive: false,
+          text: e
+        });
+      });
+    });
+    this.cxtjData = cxtjData;
+    this.actionCfg.bbkHots = [
+      {
+        label: "hot",
+        value: "hot"
+      },
+      {
+        label: "精品",
+        value: "jp"
+      }
+    ];
   }
 
   // 获取版本库版本
@@ -321,6 +730,15 @@ export default class Bbk extends Vue {
     this.bbkdataLoading = false;
     this.pagination.total = bbkdata.total;
     this.resultData = bbkdata.data;
+  }
+
+  // guid
+  getGuid() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+      let r = (Math.random() * 16) | 0,
+        v = c == "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
   }
 }
 </script>
@@ -358,11 +776,6 @@ $bdc: 1px solid #d5d5d5;
         background: #31b0d5;
       }
     }
-    .lxgl-btn {
-      background: red;
-      color: #fff;
-      border-color: red;
-    }
     .mfbb-btn {
       background: #dd8721;
       color: #fff;
@@ -393,6 +806,17 @@ $bdc: 1px solid #d5d5d5;
   }
   .bdb {
     border-bottom: $bdc;
+  }
+  .ysHots {
+    position: relative;
+    top: 0.5em;
+    left: 0.5em;
+  }
+
+  .lxgl-btn {
+    background: red;
+    color: #fff;
+    border-color: red;
   }
 }
 </style>
