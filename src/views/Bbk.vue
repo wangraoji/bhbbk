@@ -1,10 +1,10 @@
 <template>
   <div class="bbk h100">
     <el-row class="lb-table-container" v-loading="bbkdataLoading">
-      <el-row class="lb-t mb-10">
+      <el-row class="lb-t mb-10" v-if="!isCXTJ">
         <el-col :span="10">
           <el-input
-            placeholder="请输入搜索内容：如 单职业/GOM (按回车或点右边搜索按钮)"
+            placeholder="输入关键词搜索版本 例（单职业、迷失、微变、合击、火龙、中变等）"
             size="medium"
             v-model="search"
             clearable
@@ -16,9 +16,52 @@
             </el-button>
           </el-input>
         </el-col>
-        <el-col :span="5" class="pl20">
-          <el-button @click="toSearch('clear')" size="medium">清空搜索</el-button>
+        <el-col :span="5">
+          &nbsp;&nbsp;
+          <el-button @click="isCXTJ = true" size="medium">切换成条件搜索</el-button>
         </el-col>
+      </el-row>
+      <el-row class="lb-t mb-10" v-if="isCXTJ">
+        <el-row class="lb-t-t">
+          <el-row class="bdb">
+            <el-col :xl="2">
+              <el-button
+                type="text"
+                class="text-btn"
+                size="medium"
+                style="color:#606266!important"
+              >引擎类型：</el-button>
+            </el-col>
+            <el-col :xl="22">
+              <el-checkbox
+                v-model="item.isActive"
+                v-for="item of cxtjData.engineType"
+                :key="item.text"
+              >{{ item.text }}</el-checkbox>
+            </el-col>
+          </el-row>
+          <el-row class="bdb mb-10">
+            <el-col :xl="2">
+              <el-button
+                type="text"
+                class="text-btn"
+                size="medium"
+                style="color:#606266!important"
+              >版本类型：</el-button>
+            </el-col>
+            <el-col :xl="22">
+              <el-checkbox
+                v-model="item.isActive"
+                v-for="item of cxtjData.bbType"
+                :key="item.text"
+              >{{ item.text }}</el-checkbox>
+            </el-col>
+          </el-row>
+        </el-row>
+        <el-row class="lb-t-b text-center">
+          <el-button @click="toSearch('cxtj')" size="small">搜索</el-button>
+          <el-button @click="isCXTJ = false" size="small">切换成关键词搜索</el-button>
+        </el-row>
       </el-row>
       <el-row class="lb-b mb-10">
         <table class="lb-table w100">
@@ -154,12 +197,16 @@
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 import _ from "lodash";
-import { getbbkgg, getbbkdata } from "@/api/bbkApi";
+import { getbbkcxtj, getbbkgg, getbbkdata, searchbb } from "@/api/bbkApi";
 @Component
 export default class Bbk extends Vue {
   log: any;
   // 版本数据loading
   bbkdataLoading: boolean = false;
+  // 是否为条件查询
+  isCXTJ: boolean = false;
+  cxtjData: any = [];
+
   // 重置后的数据
   resultData: any = [];
   // 公告
@@ -172,10 +219,11 @@ export default class Bbk extends Vue {
     currentPage: 1,
     total: 1000
   };
-  // 获取数据
+  // 获取数据 ---  db => 分页切换取默认数据库，查询取查询的
   page: any = {
     beg: 0,
-    end: this.pagination.pagesize
+    end: this.pagination.pagesize,
+    db: "default"
   };
   // 登陆状态
   get loginStatus() {
@@ -190,16 +238,12 @@ export default class Bbk extends Vue {
   }
   // mounted
   mounted() {
-    // 获取版本库公告
-    this.getbbkggFn();
+    // 获取版本库部分数据
+    this.getbbkApiFn();
     // 获取版本
     this.getbbkdataFn(this.page);
   }
-  // 搜索
-  toSearch(e: any) {
-    let searchInput: any = this.$refs.searchInput;
-    searchInput.blur();
-  }
+
   // 新增
   addRow() {}
   // 删除
@@ -211,20 +255,65 @@ export default class Bbk extends Vue {
     });
     this.getbbkdataFn({ beg: 0, end: 30 });
   }
+  // 查询
+  toSearch(e: any) {
+    // 查询条件查询
+    if (e === "cxtj") {
+      let param: any = {};
+      _.forIn(this.cxtjData, (v: any, k: any) => {
+        param[k] = [];
+        v.forEach((e: any) => {
+          if (e.isActive) {
+            param[k].push(e.text);
+          }
+        });
+      });
+      if (param.engineType.length > 0 || param.bbType.length) {
+        this.bbkdataLoading = true;
+        this.page.db = "cxdb";
+        this.page.tj = param;
+        this.toSearchFn(this.page);
+      }
+    }
+    // 关键词查询
+    else {
+      let searchInput: any = this.$refs.searchInput;
+      searchInput.blur();
+      let param = this.search.replace(/\s+/g, "");
+      if (param !== "") {
+        this.bbkdataLoading = true;
+        this.page.db = "cxdb";
+        this.page.text = param;
+        this.toSearchFn(this.page);
+      }
+    }
+  }
+  async toSearchFn(page: any) {
+    let bbkdata: any = await searchbb(page);
+    this.bbkdataLoading = false;
+    this.pagination.total = bbkdata.total;
+    this.resultData = bbkdata.data;
+    if (this.resultData.length < 1) {
+      this.resultData.push({
+        bbkUpdated: "没有查询到相关数据，请重新查询或者刷新网站"
+      });
+    }
+  }
   // 分页切换
   currentPageChange(currentPage: any) {
     this.pagination.currentPage = currentPage;
     let beg = (currentPage - 1) * this.pagination.pagesize;
-    this.page = {
-      beg: beg,
-      end: beg + this.pagination.pagesize
-    };
+    this.page.beg = beg;
+    this.page.end = beg + this.pagination.pagesize;
+    // this.log(this.page);
     this.getbbkdataFn(this.page);
   }
-  // 获取版本库GG
-  async getbbkggFn() {
+  // 获取版本库部分数据
+  async getbbkApiFn() {
     this.gg = await getbbkgg();
+    this.cxtjData = await getbbkcxtj();
   }
+
   // 获取版本库版本
   async getbbkdataFn(page: any) {
     this.bbkdataLoading = true;
@@ -301,6 +390,9 @@ $bdc: 1px solid #d5d5d5;
   }
   .pl20 {
     padding-left: 20px !important;
+  }
+  .bdb {
+    border-bottom: $bdc;
   }
 }
 </style>
