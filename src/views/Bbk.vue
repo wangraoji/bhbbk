@@ -24,7 +24,7 @@
       <el-row class="lb-t mb-10" v-if="isCXTJ">
         <el-row class="lb-t-t">
           <el-row class="bdb">
-            <el-col :xl="2">
+            <el-col :span="2">
               <el-button
                 type="text"
                 class="text-btn"
@@ -32,7 +32,7 @@
                 style="color:#606266!important"
               >引擎类型：</el-button>
             </el-col>
-            <el-col :xl="22">
+            <el-col :span="22">
               <el-checkbox
                 v-model="item.isActive"
                 v-for="item of cxtjData.bbkEngine"
@@ -41,7 +41,7 @@
             </el-col>
           </el-row>
           <el-row class="bdb mb-10">
-            <el-col :xl="2">
+            <el-col :span="2">
               <el-button
                 type="text"
                 class="text-btn"
@@ -49,7 +49,7 @@
                 style="color:#606266!important"
               >版本类型：</el-button>
             </el-col>
-            <el-col :xl="22">
+            <el-col :span="22">
               <el-checkbox
                 v-model="item.isActive"
                 v-for="item of cxtjData.bbkType"
@@ -153,12 +153,12 @@
                   <el-row
                     v-if="item.bbkBuyLink.split('|')[0] !== 'txt' && item.bbkBuyLink.split('|')[0] !== 'text'"
                   >
-                    <el-col :xl="12" class="text-center">
+                    <el-col :xl="12" :lg="12" class="text-center">
                       <a class="gm" :href="item.bbkBuyLink.split('|')[0]" target="_blank">
                         <img src="@/assets/imgs/gm01.gif" alt="gm01" class="w100">
                       </a>
                     </el-col>
-                    <el-col :xl="12" class="text-center">
+                    <el-col :xl="12" :lg="12" class="text-center">
                       <a class="gm" :href="item.bbkBuyLink.split('|')[1]" target="_blank">
                         <img src="@/assets/imgs/gm02.gif" alt="gm02" class="w100">
                       </a>
@@ -167,10 +167,10 @@
                 </td>
                 <td v-if="loginStatus">
                   <el-row>
-                    <el-col :xl="12" style="padding:0.3em 0.5em;">
+                    <el-col :xl="12" :lg="12" style="padding:0.3em 0.5em;">
                       <el-button type="primary" plain class="w100" @click="editRow(item)">编辑</el-button>
                     </el-col>
-                    <el-col :xl="12" style="padding:0.3em 0.5em">
+                    <el-col :xl="12" :lg="12" style="padding:0.3em 0.5em">
                       <el-button type="danger" @click="deleteRow(item)" plain class="w100">删除</el-button>
                     </el-col>
                   </el-row>
@@ -200,10 +200,10 @@
     >
       <!-- 更新日期 + 版本引擎 -->
       <el-row :gutter="10" class="mb-10">
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">更新日期：</el-button>
         </el-col>
-        <el-col :xl="9">
+        <el-col :xl="9" :lg="9">
           <el-date-picker
             v-model="dialogCfg.data.bbkUpdated"
             type="date"
@@ -213,10 +213,10 @@
             value-format="yyyy-MM-dd"
           ></el-date-picker>
         </el-col>
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">版本引擎：</el-button>
         </el-col>
-        <el-col :xl="9">
+        <el-col :xl="9" :lg="9">
           <el-select
             v-model="dialogCfg.data.bbkEngine"
             placeholder="选择版本引擎"
@@ -229,10 +229,10 @@
       </el-row>
       <!-- 演示网站 -->
       <el-row :gutter="10" class="mb-10">
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">演示网站：</el-button>
         </el-col>
-        <el-col :xl="21">
+        <el-col :xl="21" :lg="21">
           <el-input
             v-model="dialogCfg.data.bbkShowWeb"
             placeholder="输入演示网站 例：https://www...."
@@ -242,19 +242,19 @@
       </el-row>
       <!-- 版本名称 -->
       <el-row :gutter="10" class="mb-10">
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">版本名称：</el-button>
         </el-col>
-        <el-col :xl="21">
+        <el-col :xl="21" :lg="21">
           <el-input v-model="dialogCfg.data.bbkName" placeholder="输入版本名称" size="small"></el-input>
         </el-col>
       </el-row>
       <!-- 字体颜色 + 字体粗细 -->
       <el-row :gutter="10" class="mb-10">
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">字体颜色：</el-button>
         </el-col>
-        <el-col :xl="9">
+        <el-col :xl="9" :lg="9">
           <el-col :span="18" style="padding:0;">
             <el-select
               v-model="dialogCfg.data.bbkLineHeight"
@@ -278,10 +278,10 @@
             </el-button>
           </el-col>
         </el-col>
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">字体粗细：</el-button>
         </el-col>
-        <el-col :xl="9">
+        <el-col :xl="9" :lg="9">
           <el-col :span="18" style="padding:0;">
             <el-select
               v-model="dialogCfg.data.bbkFontWeight"
@@ -308,10 +308,10 @@
       </el-row>
       <!-- 版本热度 + 版本类型 -->
       <el-row :gutter="10" class="mb-10">
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">版本热度：</el-button>
         </el-col>
-        <el-col :xl="9">
+        <el-col :xl="9" :lg="9">
           <el-col :span="18" style="padding:0;">
             <el-select
               v-model="dialogCfg.data.bbkHots"
@@ -332,10 +332,10 @@
             <img src="@/assets/imgs/hot.gif" class="ysHots" v-if="dialogCfg.data.bbkHots!=='jp'">
           </span>
         </el-col>
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">版本类型：</el-button>
         </el-col>
-        <el-col :xl="9">
+        <el-col :xl="9" :lg="9">
           <el-select
             v-model="dialogCfg.data.bbkType"
             placeholder="选择版本类型"
@@ -348,10 +348,10 @@
       </el-row>
       <!-- 版本截图 -->
       <el-row :gutter="10" class="mb-10">
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">版本截图：</el-button>
         </el-col>
-        <el-col :xl="21">
+        <el-col :xl="21" :lg="21">
           <el-input
             v-model="dialogCfg.data.bbkScreenshots"
             placeholder="输入截图网站 例：https://www...."
@@ -361,10 +361,10 @@
       </el-row>
       <!-- 自助购买 -->
       <el-row :gutter="10">
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">自助购买：</el-button>
         </el-col>
-        <el-col :xl="9">
+        <el-col :xl="9" :lg="9">
           <el-select v-model="bbkBuyLinkStr" placeholder="选择自助购买方式" class="w100" size="small">
             <el-option
               v-for="item in bbkBuyLinkInfo"
@@ -374,20 +374,33 @@
             ></el-option>
           </el-select>
         </el-col>
-        <el-col :xl="12" v-if="bbkBuyLinkStr==='zdy'">
-          <el-input v-model="bbkBuyLinkData.txt" placeholder="输入自定义内容" size="small" clearable></el-input>
+        <el-col :xl="12" :lg="12" v-if="bbkBuyLinkStr==='zdy'">
+          <el-input v-model="bbkBuyLinkData.txt1" placeholder="输入自定义内容" size="small" clearable></el-input>
         </el-col>
-        <el-col :xl="12" v-if="bbkBuyLinkStr==='lxgl'" class="text-center">
+        <el-col :xl="12" :lg="12" v-if="bbkBuyLinkStr==='lxgl'" class="text-center">
           <el-button class="lxgl-btn" size="small">
             <svg-icon icon-class="qq" class="lxgl-svg"/>联系管理
           </el-button>
         </el-col>
       </el-row>
+      <el-row :gutter="10" v-if="bbkBuyLinkStr==='zdy'" style="margin-top:10px">
+        <el-col :xl="3" :lg="3">
+          <el-button type="text" class="text-btn" size="small">跳转链接:</el-button>
+        </el-col>
+        <el-col :xl="21" :lg="21">
+          <el-input
+            v-model="bbkBuyLinkData.txt2"
+            placeholder="输入跳转链接 例：https://www...."
+            size="small"
+            clearable
+          ></el-input>
+        </el-col>
+      </el-row>
       <el-row :gutter="10" v-if="bbkBuyLinkStr==='link'" style="margin-top:10px">
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">购买链接1：</el-button>
         </el-col>
-        <el-col :xl="21">
+        <el-col :xl="21" :lg="21">
           <el-input
             v-model="bbkBuyLinkData.link1"
             placeholder="输入购买链接 例：https://www...."
@@ -397,10 +410,10 @@
         </el-col>
       </el-row>
       <el-row :gutter="10" v-if="bbkBuyLinkStr==='link'" style="margin-top:10px">
-        <el-col :xl="3">
+        <el-col :xl="3" :lg="3">
           <el-button type="text" class="text-btn" size="small">购买链接2：</el-button>
         </el-col>
-        <el-col :xl="21">
+        <el-col :xl="21" :lg="21">
           <el-input
             v-model="bbkBuyLinkData.link2"
             placeholder="输入购买链接 例：https://www...."
@@ -496,7 +509,12 @@ export default class Bbk extends Vue {
       value: "link"
     }
   ];
-  bbkBuyLinkData: any = {};
+  bbkBuyLinkData: any = {
+    txt1: "",
+    txt2: "",
+    link1: "",
+    link2: ""
+  };
   // 登陆状态
   get loginStatus() {
     if (typeof this.$store.getters.userInfo === "string") {
@@ -531,7 +549,8 @@ export default class Bbk extends Vue {
       this.bbkBuyLinkStr = "lxgl";
     } else if (bylink[0] === "txt") {
       this.bbkBuyLinkStr = "zdy";
-      this.bbkBuyLinkData.txt = bylink[1];
+      this.bbkBuyLinkData.txt1 = bylink[1];
+      this.bbkBuyLinkData.txt2 = bylink[2];
     } else {
       this.bbkBuyLinkStr = "link";
       this.bbkBuyLinkData.link1 = bylink[0];
@@ -563,7 +582,7 @@ export default class Bbk extends Vue {
           }
         });
       });
-      if (param.engineType.length > 0 || param.bbType.length) {
+      if (param.bbkType.length > 0 || param.bbkEngine.length) {
         this.bbkdataLoading = true;
         this.page.db = "cxdb";
         this.page.tj = param;
@@ -585,12 +604,13 @@ export default class Bbk extends Vue {
   }
   async toSearchFn(page: any) {
     let bbkdata: any = await searchbb(page);
+    // console.log(bbkdata);
     this.bbkdataLoading = false;
     this.pagination.total = bbkdata.total;
     this.resultData = bbkdata.data;
     if (this.resultData.length < 1) {
       this.resultData.push({
-        bbkUpdated: "没有查询到相关数据，请重新查询或者刷新网站"
+        group: "没有查询到相关数据，请重新查询或者刷新网站"
       });
     }
   }
@@ -605,14 +625,13 @@ export default class Bbk extends Vue {
     if (this.bbkBuyLinkStr === "lxgl") {
       this.dialogCfg.data.bbkBuyLink = "text|联系管理";
     } else if (this.bbkBuyLinkStr === "zdy") {
-      let str = this.bbkBuyLinkData.txt;
+      let str = this.bbkBuyLinkData.txt1 + "|" + this.bbkBuyLinkData.txt2;
       if (str && str.replace(/\s+/g, "") !== "") {
         this.dialogCfg.data.bbkBuyLink = "txt|" + str.replace(/\s+/g, "");
       } else {
         this.dialogCfg.data.bbkBuyLink = "";
       }
     } else if (this.bbkBuyLinkStr === "link") {
-      // console.log(this.bbkBuyLinkData);
       let obj: any = this.bbkBuyLinkData;
       if (
         obj.link1 &&
@@ -642,7 +661,7 @@ export default class Bbk extends Vue {
       bbkBuyLink: "自助购买"
     };
     let falg = true;
-    _.forIn(param, (v, k) => {
+    _.forIn(param, (v: any, k: any) => {
       v = v.replace(/\s+/g, "");
       if (v === "") {
         alert(tempData[k] + "： 未录入信息");
@@ -701,7 +720,7 @@ export default class Bbk extends Vue {
       bbkEngine: this.actionCfg.bbkEngine
     };
     let cxtjData: any = {};
-    _.forIn(cxtjInfo, (v, k) => {
+    _.forIn(cxtjInfo, (v: any, k: any) => {
       cxtjData[k] = [];
       v.forEach((e: any) => {
         cxtjData[k].push({
@@ -777,9 +796,9 @@ $bdc: 1px solid #d5d5d5;
       }
     }
     .mfbb-btn {
-      background: #dd8721;
+      background: blue;
       color: #fff;
-      border-color: #dd8721;
+      border-color: blue;
     }
     .pd075 {
       padding: 0.65em 0;

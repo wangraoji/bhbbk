@@ -34,7 +34,7 @@ export default class Home extends Vue {}
 <style lang="scss" scoped>
 .lb-main {
   height: calc(100% - 48px);
-  padding-top: 20px;
+  padding-top: 10px;
   overflow: auto;
 }
 </style>

@@ -9,8 +9,8 @@ const getbbkactionCfg = () => {
     })
 }
 
-// 获取广告
-const getaddata = () => {
+// 获取版本增删改查配置
+const getbbkad = () => {
     return request({
         url: api + '/bbkApi/ad',
         method: 'get',
@@ -77,4 +77,4 @@ const getfooterInfo = () => {
         method: 'get',
     })
 }
-export { getbbkgg, getbbkdata, searchbb, getfooterInfo, getbbkactionCfg, addbb, deletebb,editbb,getaddata } 
+export { getbbkgg, getbbkdata, searchbb, getfooterInfo, getbbkactionCfg, addbb, deletebb,editbb,getbbkad } 

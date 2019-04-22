@@ -1,45 +1,43 @@
 <template>
-  <div class="lb-ad mb-10">
-    <a v-for="img of imgData" :key="img.img" :href="img.url" target="_blank">
-      <img v-bind:src="img.name" alt="t" class="w100">
+  <div class="lb-ad">
+    <a :href="ad.url" v-for="(ad,i) of bbkad" :key="i" class="adimg" target="_blank">
+      <img
+        :src="ad.src"
+        alt="t"
+        class="w100"
+        :height="ad.height"
+        :class="{'mb-10': i === bbkad.length - 1}"
+      >
     </a>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { getaddata } from "@/api/bbkApi";
-import _ from "lodash";
+import { getbbkad } from "@/api/bbkApi";
 @Component
 export default class Ad extends Vue {
   log: any;
-  imgData: any = [
-    {
-      //   name: "ad1.png",
-      src: "logo.png",
-      url: "https://www.0lb.com/thread-652-1-1.html"
-    }
-  ];
+  bbkad: any = [];
   mounted() {
-    this.getData();
+    this.getbbkadFn();
   }
-  async getData() {
-    // let data: any = await getaddata();
-    // this.log(data);
-    // let cc = require;
-    // data.forEach((e: any) => {
-    //   e.name = cc("@/assets/imgs/" + e.name);
-    // });
-    // this.imgData = _.cloneDeep(data);
+  async getbbkadFn() {
+    this.bbkad = await getbbkad();
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .lb-ad {
-  .ad-img {
+  .adimg {
     img {
-      width: 100%;
+      display: block;
+      padding: 0;
+      margin: 0;
+      &.mb-10 {
+        margin-bottom: 10px !important;
+      }
     }
   }
 }

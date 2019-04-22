@@ -22,7 +22,9 @@
           >
             <ul>
               <li v-for="(tag,i1) of nav.children" :key="i1">
-                <a :href="tag.url" target="_blank" class="text-center linkA h100 w100">{{tag.text}}</a>
+                <a :href="tag.url" target="_blank" class="text-center linkA h100 w100">
+                  <span :style="{color:tag.color}">{{tag.text}}</span>
+                </a>
               </li>
             </ul>
             <a slot="reference" class="navli w100 h100" :class="{active:nav.active}">{{ nav.text }}</a>
