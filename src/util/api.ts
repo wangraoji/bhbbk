@@ -1,3 +1,2 @@
-// const api = "/api";
-const api = "http://183.131.80.131:3000";
+const api = "/api";
 export default api ;
