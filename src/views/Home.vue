@@ -5,6 +5,7 @@
     <!-- 主体 -->
     <div class="lb-main">
       <div class="lb-container">
+        <lb-ad/>
         <router-view/>
       </div>
       <!-- 底部 -->
@@ -19,10 +20,12 @@
 import { Component, Vue } from "vue-property-decorator";
 import header from "@/components/header/index.vue";
 import footer from "@/components/footer/index.vue";
+import ad from "@/components/ad/index.vue";
 @Component({
   components: {
     "lb-header": header,
-    "lb-footer": footer
+    "lb-footer": footer,
+    "lb-ad": ad
   }
 })
 export default class Home extends Vue {}
