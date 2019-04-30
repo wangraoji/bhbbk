@@ -22,7 +22,10 @@
           >
             <ul>
               <li v-for="(tag,i1) of nav.children" :key="i1">
-                <a :href="tag.url" target="_blank" class="text-center linkA h100 w100">
+                <a v-if="tag.url" :href="tag.url" target="_blank" class="text-center linkA h100 w100">
+                  <span :style="{color:tag.color}">{{tag.text}}</span>
+                </a>
+                 <a v-if="tag.to" class="text-center linkA h100 w100" @click="toggleNav(tag)">
                   <span :style="{color:tag.color}">{{tag.text}}</span>
                 </a>
               </li>

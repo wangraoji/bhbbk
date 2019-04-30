@@ -23,6 +23,11 @@ export default new Router({
           path: '/about',
           name: 'about',
           component: () => import('@/views/About.vue')
+        },
+        {
+          path: '/adServing',
+          name: 'adServing',
+          component: () => import('@/views/adServing.vue')
         }
       ]
     },
